@@ -21,6 +21,12 @@
 			"revision": "4cc2de6207f4128624cbdd16be30f64966c67c08"
 		},
 		{
+			"checksumSHA1": "aETqz80P1EAbiOd8cuN+DJyaO/g=",
+			"path": "github.com/jrantamaki/supertimemachine/model",
+			"revision": "d0d045acbd15fa663501a9bb71229059f8894a3d",
+			"revisionTime": "2018-01-08T22:46:33Z"
+		},
+		{
 			"checksumSHA1": "ZUOd8OUOp+xdpB7p4w/O86Y8wyc=",
 			"path": "github.com/manucorporat/sse",
 			"revision": "c142f0f1baea5cef7f98a8a6c222f6134368c1f5"
