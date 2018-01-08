@@ -6,6 +6,7 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jrantamaki/supertimemachine/model"
 )
 
 func main() {
@@ -23,6 +24,12 @@ func main() {
 	router.GET("/", func(c *gin.Context) {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
+
+	testEntry := model.TimeEntry{Description:"My Test Time Entry Here."}
+	anotherTestEntry := model.TimeEntry{Description:"Just messing with the project structure"}
+
+	log.Print("Hello ",  testEntry.Description)
+	log.Print("Hello Again and more. ",  anotherTestEntry.Description)
 
 	router.Run(":" + port)
 }
