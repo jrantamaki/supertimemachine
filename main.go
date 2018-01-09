@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jrantamaki/supertimemachine/model"
+	"strconv"
 )
 
 func main() {
@@ -30,6 +31,24 @@ func main() {
 
 	log.Print("Hello ",  testEntry.Description)
 	log.Print("Hello Again and more. ",  anotherTestEntry.Description)
+
+	// example on how to serve json...
+	router.GET("/entry/:id", func(c *gin.Context){
+		id :=  c.Param("id")
+		i, err := strconv.Atoi(id)
+
+		if err != nil { //FIXME there must be a better way to validate the parameter, that it is an int.
+			c.JSON(http.StatusBadRequest, "id must be a number");
+			return;
+		}
+		if i == 1 {
+			c.JSON(http.StatusOK, testEntry);
+		} else if i == 2 {
+			c.JSON(http.StatusOK, anotherTestEntry);
+		} else {
+			c.JSON(http.StatusNotFound, model.TimeEntry{""});
+		}
+	})
 
 	router.Run(":" + port)
 }
