@@ -6,8 +6,8 @@ import (
 	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jrantamaki/supertimemachine/model"
 	"strconv"
+	"supertimemachine/model"
 )
 
 func main() {
@@ -26,14 +26,14 @@ func main() {
 		c.HTML(http.StatusOK, "index.tmpl.html", nil)
 	})
 
-	testEntry := model.TimeEntry{Description:"My Test Time Entry Here."}
-	anotherTestEntry := model.TimeEntry{Description:"Just messing with the project structure"}
+	testEntry := model.Task{Description:"My Test Time Entry Here."}
+	anotherTestEntry := model.Task{Description:"Just messing with the project structure"}
 
 	log.Print("Hello ",  testEntry.Description)
 	log.Print("Hello Again and more. ",  anotherTestEntry.Description)
 
 	// example on how to serve json...
-	router.GET("/entry/:id", func(c *gin.Context){
+	router.GET("/task/:id", func(c *gin.Context){
 		id :=  c.Param("id")
 		i, err := strconv.Atoi(id)
 
@@ -46,7 +46,7 @@ func main() {
 		} else if i == 2 {
 			c.JSON(http.StatusOK, anotherTestEntry);
 		} else {
-			c.JSON(http.StatusNotFound, model.TimeEntry{""});
+			c.JSON(http.StatusNotFound, model.Task{"", []string{}, ""});
 		}
 	})
 
