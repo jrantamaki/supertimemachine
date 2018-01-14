@@ -5,24 +5,26 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
+import Model exposing(Task)
+
 -- Model
-type alias ModelType = Int
+type alias ModelType = { currentTask : Task }
 model : ModelType
-model = 1
+model = { currentTask = Task "Some description" }
 
 -- View
 view : ModelType -> Html MsgType
 view model =
     div []
         [ button [ onClick Increment ] [ text "-" ]
-        , text (toString model)
+        , text model.currentTask.description
         ]
 
 -- Update
 type MsgType = Increment
 
 update : MsgType -> ModelType -> ModelType
-update msg model = model + 1
+update msg model = ModelType (Task "new description")
 
 
 -- Entry
