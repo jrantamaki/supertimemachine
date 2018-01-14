@@ -5,28 +5,31 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 
+-- Model
+type alias ModelType = Int
+model : ModelType
+model = 1
 
-type alias Model = Int
-myModel : Model
-myModel = 1
-
-type Msg = Increment
-
-
-myView : Model -> Html Msg
-myView model =
+-- View
+view : ModelType -> Html MsgType
+view model =
     div []
         [ button [ onClick Increment ] [ text "-" ]
         , text (toString model)
         ]
 
-myUpdate : Msg -> Model -> Model
-myUpdate msg model = model + 1
+-- Update
+type MsgType = Increment
 
+update : MsgType -> ModelType -> ModelType
+update msg model = model + 1
+
+
+-- Entry
 main =
     beginnerProgram {
-        model = myModel,
-        view = myView,
-        update = myUpdate
+        model = model,
+        view = view,
+        update = update
     }
 
