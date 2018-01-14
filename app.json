@@ -13,5 +13,13 @@
   "image": "heroku/go:1.6",
   "mount_dir": "src/github.com/heroku/go-getting-started",
   "website": "http://github.com/heroku/go-getting-started",
-  "repository": "http://github.com/heroku/go-getting-started"
+  "repository": "http://github.com/heroku/go-getting-started",
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-go"
+    },
+    {
+      "url": "https://github.com/srid/heroku-buildpack-elm.git"
+    }
+  ]
 }
