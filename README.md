@@ -35,3 +35,11 @@ or
 For more information about using Go on Heroku, see these Dev Center articles:
 
 - [Go on Heroku](https://devcenter.heroku.com/categories/go)
+
+
+## Running the Elm client in development mode
+- Install Elm
+- Run "elm-reactor" and select the "/elm-client/Main.elm"
+
+## Building the Elm client
+- Run "elm-make elm-client/Main.elm --output static/index.html"

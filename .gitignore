@@ -1,3 +1,6 @@
 .env
 vendor
 .idea
+elm-stuff
+static/index.html
+.idea/
