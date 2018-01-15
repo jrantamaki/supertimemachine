@@ -23,8 +23,9 @@ func main() {
 	router.Static("/static", "static")
 
 	router.GET("/", func(c *gin.Context) {
-		c.HTML(http.StatusOK, "index.tmpl.html", nil)
+		c.File("static/index.html")
 	})
+
 
 	testEntry := model.Task{Description:"My Test Time Entry Here."}
 	anotherTestEntry := model.Task{Description:"Just messing with the project structure"}
