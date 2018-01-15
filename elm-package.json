@@ -1,0 +1,1 @@
+This is dummy elm-package.json file to fool the elm buildpack (it will check the existence of this file). See other magic in app.json for building the elm-client

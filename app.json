@@ -8,7 +8,7 @@
     "example"
   ],
   "env": {
-    "ELM_COMPILE": "elm-make elm-client/Main.elm --output static/index.html"    
+    "ELM_COMPILE": "cd elm-client; elm-make elm-client/Main.elm --output ../static/index.html"
   },
   "image": "heroku/go:1.6",
   "mount_dir": "src/github.com/heroku/go-getting-started",
