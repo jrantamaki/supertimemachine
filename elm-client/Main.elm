@@ -23,9 +23,11 @@ model = { currentTask = Task "Not fetched yet" }
 view : ModelType -> Html MsgType
 view model =
     div []
-        [ button [ onClick FetchTaskCommand ] [ text "-" ],
-        text "Current task: "
-        , text model.currentTask.description
+        [
+            button [ onClick FetchTaskCommand ] [ text "Fetch task #2" ],
+            br [] [],
+            text "Current task: ",
+            text model.currentTask.description
         ]
 
 -- ****************
@@ -41,7 +43,7 @@ type MsgType =
 fetchTask : Cmd MsgType
 fetchTask =
     let
-        url = "http://localhost:8080/task/2"
+        url = "/task/2"
         request = Http.get url decodeTaskJson
     in
         Http.send FetchTaskResult request
