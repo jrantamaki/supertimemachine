@@ -2,46 +2,90 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
+import Http
+import Json.Decode exposing (Decoder)
+import Json.Decode.Pipeline exposing (decode, required)
+
 
 import Model exposing(Task)
 
--- Model
+-- ***************
+-- **** Model ****
+-- ***************
 type alias ModelType = { currentTask : Task }
 model : ModelType
 model = { currentTask = Task "Not fetched yet" }
 
--- View
+-- **************
+-- **** View ****
+-- **************
 view : ModelType -> Html MsgType
 view model =
     div []
-        [ button [ onClick FetchTaskCommand ] [ text "-" ]
-        , br
-        , text "Current task: "
+        [ button [ onClick FetchTaskCommand ] [ text "-" ],
+        text "Current task: "
         , text model.currentTask.description
         ]
 
--- Update
-type MsgType = FetchTaskCommand
-    | FetchTaskResult Task
+-- ****************
+-- **** Update ****
+-- ****************
+type MsgType =
+    -- Fired from UI to fetch a task
+    FetchTaskCommand
+    -- Message for fetching task result that carries the fetched task
+    | FetchTaskResult (Result Http.Error Task)
 
+-- The function to fetch task, returns command
+fetchTask : Cmd MsgType
+fetchTask =
+    let
+        url = "http://localhost:8080/task/2"
+        request = Http.get url decodeTaskJson
+    in
+        Http.send FetchTaskResult request
 
-fetchTask : FetchTaskResult
-fetchTask = FetchTaskResult Task "Fetched task!"
+decodeTaskJson : Decoder Task
+decodeTaskJson =
+    decode Task
+        |> required "description" Json.Decode.string
 
-update : MsgType -> ModelType -> ModelType
+-- Our update function takes in message and model and returns a tuple of new model with possibly a command to perform
+update : MsgType -> ModelType -> (ModelType, Cmd MsgType)
 update msg model =
-    case msg of FetchTaskCommand -> ModelType fetchTask
-    case msg of FetchTaskResult ->
-        ModelType (Task "new descriptio")
+    -- Handling the request to fetch a task
+    case msg of
+
+    FetchTaskCommand ->
+        (model, fetchTask)
+
+    -- Handling the result of fetching the task
+    FetchTaskResult (Ok fetchedTask) ->
+        ({ model | currentTask = fetchedTask }, Cmd.none) -- Lets update the current task field of the model record
+
+    -- Handling the http error while fetching task
+    FetchTaskResult (Err _) ->
+        (model, Cmd.none)
 
 
 -- Entry
+
+init : Task -> (ModelType, Cmd MsgType)
+init task =
+    (ModelType task, Cmd.none)
+
+
+subscriptions : ModelType -> Sub MsgType
+subscriptions model =
+  Sub.none
+
+
 main =
-    beginnerProgram {
-        model = model,
+    Html.program {
+        init = init (Task "Not fetched yet"),
         view = view,
-        update = update
+        update = update,
+        subscriptions = subscriptions
     }
 
