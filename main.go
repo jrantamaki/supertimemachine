@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"supertimemachine/service"
 	"strconv"
+	"supertimemachine/model"
 )
 
 func main() {
@@ -54,6 +55,14 @@ func main() {
 
 		c.JSON(http.StatusOK, task);
 	})
+
+	router.POST("/task/", func(c *gin.Context){
+		var task model.Task
+		c.BindJSON(&task)
+	
+		c.JSON(http.StatusOK, task)
+	})
+
 
 	router.Run(":" + port)
 }
