@@ -29,7 +29,7 @@ func main() {
 	router.GET("/task/", func(c *gin.Context){
 		err, allTasks := service.GetAllTasks()
 		if err != nil {
-			c.JSON(http.StatusBadRequest, "Could not get all tasks");
+			c.JSON(http.StatusInternalServerError, "Could not get all tasks");
 			return
 		}
 		c.JSON(http.StatusOK, allTasks)
