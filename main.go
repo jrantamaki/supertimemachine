@@ -11,6 +11,10 @@ import (
 	"supertimemachine/model"
 )
 
+// This is the "datasource" for now :)
+var data *[]model.Task;
+
+
 func main() {
 	port := os.Getenv("PORT")
 
@@ -23,12 +27,14 @@ func main() {
 	router.LoadHTMLGlob("templates/*.tmpl.html")
 	router.Static("/static", "static")
 
+	data = service.InitTaskData()
+
 	router.GET("/", func(c *gin.Context) {
 		c.File("static/index.html")
 	})
 
 	router.GET("/task/", func(c *gin.Context){
-		err, allTasks := service.GetAllTasks()
+		err, allTasks := service.GetAllTasks(data)
 		if err != nil {
 			c.JSON(http.StatusInternalServerError, "Could not get all tasks");
 			return
@@ -46,7 +52,7 @@ func main() {
 			return
 		}
 
-		e, task := service.GetTask(i)
+		e, task := service.GetTask(i, data)
 
 		if e != nil {
 			c.JSON(http.StatusBadRequest, e.Error())
@@ -59,7 +65,9 @@ func main() {
 	router.POST("/task/", func(c *gin.Context){
 		var task model.Task
 		c.BindJSON(&task)
-	
+
+		service.AddNewTask(task, data)
+
 		c.JSON(http.StatusOK, task)
 	})
 
