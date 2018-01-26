@@ -3,3 +3,5 @@ vendor
 .idea
 elm-stuff
 .idea/
+static/index.html
+*.iml
