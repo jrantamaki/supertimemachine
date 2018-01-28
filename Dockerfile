@@ -1,12 +1,11 @@
-FROM alpine:latest
+# build stage
+FROM golang:alpine AS build-env
+COPY . /build
+WORKDIR /build
+# Git needed for 'go get' for fetching dependencies
+RUN apk add --no-cache git mercurial
 
-MAINTAINER Edward Muller <edward@heroku.com>
-
-WORKDIR "/opt"
-
-ADD .docker_build/go-getting-started /opt/bin/go-getting-started
-ADD ./templates /opt/templates
-ADD ./static /opt/static
-
-CMD ["/opt/bin/go-getting-started"]
-
+# Build Go backend
+WORKDIR /build/backend
+RUN . ./build.sh
+CMD ./goapp
