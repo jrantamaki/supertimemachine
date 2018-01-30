@@ -57,7 +57,10 @@ docker container run -it archvile/supertimemachine /bin/sh
 docker container run -it -p 8000:8000 --env PORT=8000 archvile/supertimemachine
 
 ## Pushing to Heroku
-eroku container:login
-heroku create
-heroku container:push web
-heroku apps:info
+
+```sh
+$ heroku container:login
+$ heroku create
+$ heroku container:push web
+$ heroku apps:info
+```
