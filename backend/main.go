@@ -25,7 +25,7 @@ func main() {
 
 	router.GET("/", func(c *gin.Context) {
 		c.File("../elm-client/dist/index.html")
-	}).File("static/index.html")
+	})
 
 	router.GET("/task/", service.GetAllTasksHandler)
 	router.GET("/task/:id", service.GetTaskHandler)
