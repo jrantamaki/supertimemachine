@@ -43,3 +43,24 @@ For more information about using Go on Heroku, see these Dev Center articles:
 
 ## Building the Elm client
 - Run "elm-make elm-client/Main.elm --output static/index.html"
+
+
+# Docker
+
+## Building docker image
+docker build -t archvile/supertimemachine .
+
+## Dropping to shell
+docker container run -it archvile/supertimemachine /bin/sh
+
+## Running the app in the container
+docker container run -it -p 8000:8000 --env PORT=8000 archvile/supertimemachine
+
+## Pushing to Heroku
+
+```sh
+$ heroku container:login
+$ heroku create
+$ heroku container:push web
+$ heroku apps:info
+```

@@ -1,12 +1,20 @@
-FROM alpine:latest
+# build stage
+FROM golang:alpine AS build-env
+COPY . /build
+WORKDIR /build
+# Git needed for 'go get' for fetching dependencies
+RUN apk add --no-cache git mercurial
 
-MAINTAINER Edward Muller <edward@heroku.com>
+# Build Go backend
+WORKDIR /build/backend
+RUN . ./build.sh
 
-WORKDIR "/opt"
 
-ADD .docker_build/go-getting-started /opt/bin/go-getting-started
-ADD ./templates /opt/templates
-ADD ./static /opt/static
-
-CMD ["/opt/bin/go-getting-started"]
-
+# Final stage only copy the files needed from previous step and use smaller base image (drops image size from 500MB to 18MB)
+FROM alpine
+WORKDIR /app
+COPY --from=build-env /build/backend/goapp /app/backend/
+COPY --from=build-env /build/backend/templates /app/backend/templates
+COPY --from=build-env /build/elm-client/dist /app/elm-client/dist
+WORKDIR /app/backend
+CMD ./goapp
