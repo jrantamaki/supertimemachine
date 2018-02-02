@@ -5,10 +5,12 @@ WORKDIR /build
 # Git needed for 'go get' for fetching dependencies
 RUN apk add --no-cache git mercurial
 
+# Govendor for dependency management
+RUN go get -u github.com/kardianos/govendor
+
 # Build Go backend
 WORKDIR /build/backend
 RUN . ./build.sh
-
 
 # Final stage only copy the files needed from previous step and use smaller base image (drops image size from 500MB to 18MB)
 FROM alpine

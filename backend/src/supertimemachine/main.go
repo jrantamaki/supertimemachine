@@ -3,9 +3,7 @@ package main
 import (
 	"log"
 	"os"
-	"flag"
 	"github.com/gin-gonic/gin"
-	"github.com/gin-contrib/cors"
 	"supertimemachine/service"
 )
 
@@ -16,8 +14,6 @@ func main() {
 	if port == "" {
 		log.Fatal("$PORT must be set")
 	}
-
-	var allowCors = flag.String("allowCORS","","CORS allowed for given url")
 
 	// This is really messed up way of doing the initialization but will do for now.
 	service.Data = service.InitTaskData()
