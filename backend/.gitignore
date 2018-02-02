@@ -1,1 +1,5 @@
 goapp
+.cache
+src/vendor/*
+!src/vendor/vendor.json
+
