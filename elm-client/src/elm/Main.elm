@@ -2,6 +2,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
+import Html.Attributes exposing (class,id)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode exposing (Decoder)
@@ -22,13 +23,21 @@ type alias ModelType = { currentTask : Task, config : Config }
 -- **************
 view : ModelType -> Html MsgType
 view model =
-    div []
+    div [ class "container" ]
         [
-            text ("Config: " ++ (toString model.config)),
-            br [] [],
-            button [ onClick (FetchTaskCommand model.config)] [ text "Fetch task #2" ],
-            br [] [],
-            taskView model.currentTask
+            div [ class "row" ] [
+                div [ class "col-sm" ] [
+                    h3 [] [text "Todays stuff"]
+                ],
+                 div [ class "col-sm" ] [
+                    h3 [] [text "Current"],
+                    taskView model.currentTask
+                ],
+                 div [ class "col-sm" ] [
+                    h3 [] [text "Temp"],
+                    button [ class "btn btn-primary", onClick (FetchTaskCommand model.config)] [ text "Fetch task #2" ]
+                ]
+            ]
         ]
 
 -- ****************
