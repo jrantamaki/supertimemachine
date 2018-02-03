@@ -43,5 +43,11 @@ cd $GOPATH/src
 govendor sync
 ``` 
 
-
+# Running locally
+## Allowing CORS for the Webpack served UI
+When UI is served through Webpack we need to allow CORS for the
+Webpack host. Start the app with flag:
+```
+./goapp -allowCORS=http://localhost:8080
+```
 
