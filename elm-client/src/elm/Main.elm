@@ -62,6 +62,7 @@ decodeTaskJson : Decoder Task
 decodeTaskJson =
     decode Task
         |> required "description" Json.Decode.string
+        |> required "tags" (Json.Decode.list Json.Decode.string)
 
 -- Our update function takes in message and model and returns a tuple of new model with possibly a command to perform
 update : MsgType -> ModelType -> (ModelType, Cmd MsgType)
@@ -89,7 +90,7 @@ init config =
 
 initialModel : Config -> ModelType
 initialModel configIn =
-    { currentTask = Task "Task not get yet!"
+    { currentTask = Task "Task not get yet!" []
 -- TODO: we should just take the whole config in
     ,config = Config configIn.apiUrl
     }

@@ -1,5 +1,6 @@
 module Model exposing (Task)
 
 type alias Task = {
-    description : String
+    description : String,
+    tags : List String
 }
