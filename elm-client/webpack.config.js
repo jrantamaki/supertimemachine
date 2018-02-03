@@ -5,6 +5,8 @@ var HtmlWebpackPlugin = require('html-webpack-plugin');
 var autoprefixer = require('autoprefixer');
 var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var CopyWebpackPlugin = require('copy-webpack-plugin');
+require('dotenv').config();
+
 
 
 const prod = 'production';
@@ -82,7 +84,10 @@ if (isDev === true) {
                 test: /\.sc?ss$/,
                 use: ['style-loader', 'css-loader', 'postcss-loader', 'sass-loader']
             }]
-        }
+        },
+        plugins: [
+            new webpack.EnvironmentPlugin(["PORT", "ANOTHER_ENV_VAR"])
+        ]
     });
 }
 
