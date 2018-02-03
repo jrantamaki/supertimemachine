@@ -1,4 +1,7 @@
 #!/bin/bash
 export GOPATH=$PWD
-go get github.com/gin-gonic/gin
-go build -o goapp
+cd src
+govendor sync
+cd supertimemachine
+go build -o ../../goapp
+cd $GOPATH
