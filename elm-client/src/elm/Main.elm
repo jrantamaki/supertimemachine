@@ -9,6 +9,7 @@ import Json.Decode.Pipeline exposing (decode, required)
 
 
 import Model exposing(Task)
+import View exposing(..)
 
 -- ***************
 -- **** Model ****
@@ -27,8 +28,7 @@ view model =
             br [] [],
             button [ onClick (FetchTaskCommand model.config)] [ text "Fetch task #2" ],
             br [] [],
-            text "Current task is: ",
-            text model.currentTask.description
+            taskView model.currentTask
         ]
 
 -- ****************
