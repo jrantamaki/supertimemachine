@@ -5,16 +5,17 @@ import (
 	"net/http"
 	"strconv"
 	"supertimemachine/model"
+	"gopkg.in/mgo.v2"
 )
 
 // This is the "datasource" for now :)
-var Data *[]model.Task;
+var Session *mgo.Session;
 
 func AddNewTaskHandler(c *gin.Context){
 	var task model.Task
 	c.BindJSON(&task)
 
-	AddNewTask(task, Data)
+	AddNewTask(task, Session)
 
 	c.JSON(http.StatusOK, task)
 }
@@ -28,7 +29,7 @@ func GetTaskHandler(c *gin.Context){
 		return
 	}
 
-	e, task := GetTask(i, Data)
+	e, task := GetTask(i, Session)
 
 	if e != nil {
 		c.JSON(http.StatusBadRequest, e.Error())
@@ -39,7 +40,7 @@ func GetTaskHandler(c *gin.Context){
 }
 
 func GetAllTasksHandler(c *gin.Context) {
-	err, allTasks := GetAllTasks(Data)
+	err, allTasks := GetAllTasks(Session)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, "Could not get all tasks");

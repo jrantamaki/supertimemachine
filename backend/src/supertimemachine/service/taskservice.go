@@ -3,51 +3,58 @@ package service
 import (
 	"supertimemachine/model"
 	"log"
-	"fmt"
+	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 )
 
-func InitTaskData() *[]model.Task {
-	task1 := model.Task{Id: 0, Description:"Deploying to heroku for the first time.", Tags:[]string{"STM", "CODING", "HEROKU", "CONFIGURATION"}};
-	task2 := model.Task{Id: 1, Description:"Refactoring the main class for STM", Tags:[]string{"STM", "CODING", "REFACTORING"}};
-	task3 := model.Task{Id: 2, Description:"Playing Street Fighter at the office.", Tags:[]string{"games", "entertainment", "beer-friday"}};
-	task4 := model.Task{Id: 3, Description:"Implementing the service structure for STM", Tags:[]string{"STM", "CODING"}};
-
-	tasks := make([]model.Task,1000)
-
-	tasks[0] = task1
-	tasks[1] = task2
-	tasks[2] = task3
-	tasks[3] = task4
-
-	return &tasks
-}
-
-func GetAllTasks(tasks *[]model.Task) (error, []model.Task) {
+func GetAllTasks(session *mgo.Session) (error, []model.Task) {
 	log.Print("Getting all tasks! ")
 
-	return nil, *tasks
+	s := session.Copy()
+	defer s.Close()
+
+	c := s.DB("supertimemachine-dev").C("tasks")
+
+	var allTasks []model.Task
+	err := c.Find(bson.M{}).All(&allTasks)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return nil, allTasks
 }
 
-func GetTask(id int, tasks *[]model.Task) (error, *model.Task) {
+func GetTask(id int,session *mgo.Session) (error, *model.Task) {
 	log.Print("Getting tasks id: ", id)
 
-	e, task := GetAllTasks(tasks);
+	s := session.Copy()
+	defer s.Close()
 
-	if e != nil {
-		return e, nil
-	}
-	if id < 0 || id >= len(task) {
-		return fmt.Errorf("Invalid task id: %d", id), nil
+	c := s.DB("supertimemachine-dev").C("tasks")
+	var task model.Task
+
+	err := c.Find(bson.M{"id": id}).One(&task)
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
-	return nil, &task[id]
+	return nil, &task
 }
 
-func AddNewTask(task model.Task, tasks *[]model.Task) (error, model.Task) {
+func AddNewTask(task model.Task, session *mgo.Session) (error, model.Task) {
 	log.Print("Adding a new fantastic task")
 
-	if task.Id != 0 {
-		(*tasks)[task.Id] = task
+	s := session.Copy()
+	defer s.Close()
+
+	c := s.DB("supertimemachine-dev").C("tasks")
+
+	err := c.Insert(task)
+
+	if err != nil {
+		log.Fatal(err)
 	}
 
 	return nil, task
