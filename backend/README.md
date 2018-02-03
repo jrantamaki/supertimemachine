@@ -44,4 +44,18 @@ govendor sync
 ``` 
 
 
+## Running with MongoDb 
+
+You need a mongodb instance in the mongolab or locally. Add user and collection for the database.
+
+At the moment there is assumption that the database name is "supertimemachine-dev" and it includes a collections: "tasks"
+
+Set the environment variables:
+```
+export MONGO_URL=ds123456.mlab.com:123456
+export MONGO_USER=stmuser
+export MONGO_PASSWORD=topsecretpassword
+export MONGO_DB=supertimemachine-dev
+```
+
 
