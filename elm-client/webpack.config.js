@@ -86,7 +86,7 @@ if (isDev === true) {
             }]
         },
         plugins: [
-            new webpack.EnvironmentPlugin(["PORT", "ANOTHER_ENV_VAR"])
+            new webpack.EnvironmentPlugin(["API_URL", "ANOTHER_ENV_VAR"])
         ]
     });
 }
