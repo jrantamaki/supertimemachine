@@ -1,4 +1,4 @@
-# About the webpack
+# About the Webpack
 Webpack has been setup following: https://github.com/elm-community/elm-webpack-starter
 
 ## Setup
@@ -9,7 +9,11 @@ npm run reinstall
 *This does a clean (re)install of all npm and elm packages, plus a global elm install.*
 
 ## Serve locally:
+We need to setup the url for the REST API, which is server from another
+port. Also you need to configure the API to allow CORS for JavaScript 
+served through Webpack (see [README](../backend/README.md)).
 ```
+export API_URL=http://localhost:8000
 npm start
 ```
 * Access app at `http://localhost:8080/`

@@ -13,9 +13,8 @@ import Model exposing(Task)
 -- ***************
 -- **** Model ****
 -- ***************
-type alias ModelType = { currentTask : Task }
-model : ModelType
-model = { currentTask = Task "Not fetched yet" }
+type alias Config =  { apiUrl : String }
+type alias ModelType = { currentTask : Task, config : Config }
 
 -- **************
 -- **** View ****
@@ -24,7 +23,9 @@ view : ModelType -> Html MsgType
 view model =
     div []
         [
-            button [ onClick FetchTaskCommand ] [ text "Fetch task #2" ],
+            text ("Config: " ++ (toString model.config)),
+            br [] [],
+            button [ onClick (FetchTaskCommand model.config)] [ text "Fetch task #2" ],
             br [] [],
             text "Current task is: ",
             text model.currentTask.description
@@ -35,15 +36,15 @@ view model =
 -- ****************
 type MsgType =
     -- Fired from UI to fetch a task
-    FetchTaskCommand
+    FetchTaskCommand Config
     -- Message for fetching task result that carries the fetched task
     | FetchTaskResult (Result Http.Error Task)
 
 -- The function to fetch task, returns command
-fetchTask : Cmd MsgType
-fetchTask =
+fetchTask : Config -> Cmd MsgType
+fetchTask config =
     let
-        url = "/task/2"
+        url = config.apiUrl ++ "/task/2"
         request = Http.get url decodeTaskJson
     in
         Http.send FetchTaskResult request
@@ -59,8 +60,8 @@ update msg model =
     -- Handling the request to fetch a task
     case msg of
 
-    FetchTaskCommand ->
-        (model, fetchTask)
+    FetchTaskCommand config ->
+        (model, fetchTask config)
 
     -- Handling the result of fetching the task
     FetchTaskResult (Ok fetchedTask) ->
@@ -73,10 +74,16 @@ update msg model =
 
 -- Entry
 
-init : Task -> (ModelType, Cmd MsgType)
-init task =
-    (ModelType task, Cmd.none)
+init : Config -> (ModelType, Cmd MsgType)
+init config =
+    (initialModel config, Cmd.none)
 
+initialModel : Config -> ModelType
+initialModel configIn =
+    { currentTask = Task "Task not get yet!"
+-- TODO: we should just take the whole config in
+    ,config = Config configIn.apiUrl
+    }
 
 subscriptions : ModelType -> Sub MsgType
 subscriptions model =
@@ -84,8 +91,8 @@ subscriptions model =
 
 
 main =
-    Html.program {
-        init = init (Task "Not fetched yet"),
+    Html.programWithFlags {
+        init = init,
         view = view,
         update = update,
         subscriptions = subscriptions
