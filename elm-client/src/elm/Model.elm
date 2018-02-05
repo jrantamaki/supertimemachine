@@ -1,6 +1,20 @@
-module Model exposing (Task)
+module Model exposing (..)
 
-type alias Task = {
+import Date exposing (Date)
+import Time exposing (..)
+
+-- ***************
+-- **** Model ****
+-- ***************
+type alias Config =  { apiUrl : String }
+type alias ModelType = {
+    currentTask : TaskEntry,
+    config : Config,
+    error: String,
+    timeNow: Time }
+
+type alias TaskEntry = {
     description : String,
-    tags : List String
-}
+    tags : List String,
+    startedAt : Date,
+    stoppedAt : Maybe Date }

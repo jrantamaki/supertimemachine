@@ -1,3 +1,9 @@
+# Using elm
+## Installing new dependencies
+```
+elm-package install elm-community/json-extra
+```
+
 # About the Webpack
 Webpack has been setup following: https://github.com/elm-community/elm-webpack-starter
 
