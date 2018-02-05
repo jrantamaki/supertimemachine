@@ -36,7 +36,15 @@ func GetTaskHandler(c *gin.Context){
 		return
 	}
 
-	c.JSON(http.StatusOK, task);
+
+	c.JSON(http.StatusOK, gin.H{
+		"id": task.Id,
+		"description": task.Description,
+		"started_at": task.Started_at,
+		// Oh shit, how ugly can this get?! Give me the ternary operator pretty please
+		"stopped_at": func() *string { if task.Stopped_at != "" { return &task.Stopped_at } else { return nil } }(),
+		"tags": task.Tags,
+		});
 }
 
 func GetAllTasksHandler(c *gin.Context) {
