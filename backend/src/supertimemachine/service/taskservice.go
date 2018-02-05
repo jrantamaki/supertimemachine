@@ -3,6 +3,7 @@ package service
 import (
 	"supertimemachine/model"
 	"log"
+	"time"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
@@ -51,6 +52,7 @@ func AddNewTask(task model.Task, session *mgo.Session) (error, model.Task) {
 
 	c := s.DB("supertimemachine-dev").C("tasks")
 
+	task.Started_at = time.Now().UTC().Format(time.RFC3339)
 	err := c.Insert(task)
 
 	if err != nil {
