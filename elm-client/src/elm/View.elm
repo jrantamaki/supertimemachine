@@ -1,4 +1,4 @@
-module View exposing (taskView)
+module View exposing (taskListView)
 
 import Date exposing (Date)
 import Model exposing(..)
@@ -10,18 +10,21 @@ import Date.Extra.Period as Period
 import Date.Extra.Duration as Duration
 import Time exposing (..)
 
-taskView : ModelType -> Html msg
-taskView model =
-    let
-        task = model.currentTask
-    in
+taskListView : ModelType -> Html msg
+taskListView model =
+    div [] (List.map (\task -> taskView task model.timeNow) model.taskList.tasks)
+
+
+taskView : TaskEntry -> Time -> Html msg
+taskView task timeNow =
     ul [ class "list-group list-group-flush"] [
         li [class "list-group-item"] [ text task.description],
         li [class "list-group-item"] [ span [] [ text (formatDate task.startedAt)]],
         li [class "list-group-item"] [ span [] [ text (printStopTime task.stoppedAt)]],
-        li [class "list-group-item"] [ text (printDuration task.startedAt task.stoppedAt model.timeNow)],
+        li [class "list-group-item"] [ text (printDuration task.startedAt task.stoppedAt timeNow)],
         li [class "list-group-item"] (List.map (\s -> span [] [ span [ class "badge badge-primary" ] [text s], text " "]) task.tags)
     ]
+
 
 printStopTime : Maybe Date -> String
 printStopTime maybe =
