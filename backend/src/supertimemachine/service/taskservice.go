@@ -1,14 +1,14 @@
 package service
 
 import (
-	"supertimemachine/model"
+	. "supertimemachine/model"
 	"log"
 	"time"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
 )
 
-func GetAllTasks(session *mgo.Session) (error, []model.Task) {
+func GetAllTasks(session *mgo.Session) (error, []Task) {
 	log.Print("Getting all tasks! ")
 
 	s := session.Copy()
@@ -16,7 +16,7 @@ func GetAllTasks(session *mgo.Session) (error, []model.Task) {
 
 	c := s.DB("supertimemachine-dev").C("tasks")
 
-	var allTasks []model.Task
+	var allTasks []Task
 	err := c.Find(bson.M{}).All(&allTasks)
 
 	if err != nil {
@@ -26,14 +26,14 @@ func GetAllTasks(session *mgo.Session) (error, []model.Task) {
 	return nil, allTasks
 }
 
-func GetTask(id int,session *mgo.Session) (error, *model.Task) {
+func GetTask(id int,session *mgo.Session) (error, *Task) {
 	log.Print("Getting tasks id: ", id)
 
 	s := session.Copy()
 	defer s.Close()
 
 	c := s.DB("supertimemachine-dev").C("tasks")
-	var task model.Task
+	var task Task
 
 	err := c.Find(bson.M{"id": id}).One(&task)
 
@@ -44,7 +44,7 @@ func GetTask(id int,session *mgo.Session) (error, *model.Task) {
 	return nil, &task
 }
 
-func AddNewTask(task model.Task, session *mgo.Session) (error, model.Task) {
+func AddNewTask(task Task, session *mgo.Session) (error, Task) {
 	log.Print("Adding a new fantastic task")
 
 	s := session.Copy()
