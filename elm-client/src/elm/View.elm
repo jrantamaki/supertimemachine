@@ -29,7 +29,7 @@ taskView task timeNow =
 newTaskFormView : NewTaskForm -> Html MsgType
 newTaskFormView taskForm =
     div [] [
-        input [ placeholder "Description", onInput (NewTaskFormInput << OnDescInput)] [],
+        input [ placeholder "Description", value taskForm.descInput, onInput (NewTaskFormInput << OnDescInput)] [],
         div [] [ span [] (renderTags taskForm.tags) ],
         input [ placeholder "tags", value taskForm.tagInput, onInput (NewTaskFormInput << OnTagInput)] [],
         div [ ] [ button [class "btn btn-primary", onClick (SubmitTaskCommand taskForm)] [ text "Start" ] ]

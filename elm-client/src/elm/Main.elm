@@ -2,7 +2,7 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class,id,hidden)
+import Html.Attributes exposing (class,id,hidden, style)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode exposing (Decoder, nullable, list)
@@ -35,7 +35,7 @@ view model =
                     taskListView model
                 ],
                  div [ class "col-sm" ] [
-                    h3 [] [text "New task"],
+                    h3 [ style [("color", "rgb(100,200,256)")] ] [text "New task"],
                     newTaskFormView model.newTaskForm
                 ],
                  div [ class "col-sm" ] [
@@ -112,7 +112,7 @@ update msg model =
     SubmitTaskCommand newTaskForm -> (model, submitTask newTaskForm model.config)
 
     -- Responses from API for submitting task
-    SubmitTaskResult (Ok task) -> (model, Cmd.none)
+    SubmitTaskResult (Ok task) -> ({model | newTaskForm = emptyTaskForm } , Cmd.none)
     SubmitTaskResult (Err err) -> ({model | error = toString err}, Cmd.none)
 
     -- Updating time
@@ -155,6 +155,8 @@ init config =
     (initialModel config, Cmd.none)
 
 
+
+
 initialModel : Config -> ModelType
 initialModel configIn =
     { taskList = TaskList []
@@ -162,7 +164,7 @@ initialModel configIn =
     ,config = Config configIn.apiUrl
     ,error=""
     ,timeNow=0
-    ,newTaskForm= NewTaskForm "" "" []
+    ,newTaskForm= emptyTaskForm
     }
 
 subscriptions : ModelType -> Sub MsgType

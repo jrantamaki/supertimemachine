@@ -40,6 +40,9 @@ type alias NewTaskForm = {
     tagInput: String,
     tags: List String }
 
+emptyTaskForm : NewTaskForm
+emptyTaskForm = NewTaskForm "" "" []
+
 type alias ModelType = {
     taskList : TaskList,
     config : Config,
