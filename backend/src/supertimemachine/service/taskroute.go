@@ -18,9 +18,14 @@ func AddNewTaskHandler(c *gin.Context){
 	var task Task
 	c.BindJSON(&task)
 
-	AddNewTask(task, Session)
+	e, created := AddNewTask(task, Session)
 
-	c.JSON(http.StatusOK, task)
+	if e != nil {
+		c.JSON(http.StatusBadRequest, e.Error())
+		return
+	}
+
+	c.JSON(http.StatusOK, ToMap(&created))
 }
 
 func GetTaskHandler(c *gin.Context){

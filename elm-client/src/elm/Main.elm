@@ -2,16 +2,19 @@
 module Main exposing (..)
 
 import Html exposing (..)
-import Html.Attributes exposing (class,id,hidden)
+import Html.Attributes exposing (class,id,hidden, style)
 import Html.Events exposing (onClick)
 import Http
 import Json.Decode exposing (Decoder, nullable, list)
 import Json.Decode.Pipeline exposing (decode, required, optional)
 import Json.Decode.Extra exposing (date)
+import Json.Encode as Encode exposing (..)
 
 import Model exposing (..)
 import View exposing(..)
 import Time exposing (..)
+import String exposing (split)
+import List exposing (..)
 
 
 -- **************
@@ -32,7 +35,8 @@ view model =
                     taskListView model
                 ],
                  div [ class "col-sm" ] [
-                    h3 [] [text "Current"]
+                    h3 [ style [("color", "rgb(100,200,256)")] ] [text "New task"],
+                    newTaskFormView model.newTaskForm
                 ],
                  div [ class "col-sm" ] [
                     h3 [] [text "Temp"],
@@ -44,13 +48,7 @@ view model =
 -- ****************
 -- **** Update ****
 -- ****************
-type MsgType =
-    -- Fired from UI to fetch a task
-    FetchTaskCommand Config
-    -- Message for fetching task result that carries the fetched task
-    | FetchTaskResult (Result Http.Error TaskList)
-    -- To update current time
-    | Tick Time
+
 
 -- The function to fetch task, returns command
 fetchTask : Config -> Cmd MsgType
@@ -61,10 +59,29 @@ fetchTask config =
     in
         Http.send FetchTaskResult request
 
+submitTask : NewTaskForm -> Config -> Cmd MsgType
+submitTask taskForm config =
+    let
+        url = config.apiUrl ++ "/task/"
+        body =
+            taskForm
+                |> taskFormEncoder
+                |> Http.jsonBody
+        request = Http.post url body taskDecoder
+     in
+       Http.send SubmitTaskResult request
+
+taskFormEncoder : NewTaskForm -> Encode.Value
+taskFormEncoder form =
+    Encode.object [
+        ("description", Encode.string form.descInput),
+        ("tags",  Encode.list  (List.map string form.tags))
+    ]
+
 tasksDecoder : Decoder TaskList
 tasksDecoder =
     decode TaskList
-        |> required "tasks" (list taskDecoder)
+        |> required "tasks" (Json.Decode.list taskDecoder)
 
 taskDecoder : Decoder TaskEntry
 taskDecoder =
@@ -89,24 +106,55 @@ update msg model =
         ({ model | taskList = tasks, error="" }, Cmd.none) -- Lets update the current task field of the model record
 
     -- Handling the http error (or parsing) while fetching task
-    FetchTaskResult (Err err) ->
-        let
-            _ = Debug.log "Error while getting tasks" err
-        in
-            ({model | error = toString err}, Cmd.none)
+    FetchTaskResult (Err err) -> ({model | error = toString err}, Cmd.none)
+
+    -- Submitting new task
+    SubmitTaskCommand newTaskForm -> (model, submitTask newTaskForm model.config)
+
+    -- Responses from API for submitting task
+    SubmitTaskResult (Ok task) -> ({model | newTaskForm = emptyTaskForm } , Cmd.none)
+    SubmitTaskResult (Err err) -> ({model | error = toString err}, Cmd.none)
 
     -- Updating time
     Tick time ->
-        let
-            _ = Debug.log "Time " time
-        in
             ({model | timeNow = time}, Cmd.none)
+
+    NewTaskFormInput subtype -> ( { model | newTaskForm = updateNewTask subtype model.newTaskForm } , Cmd.none)
+
+updateNewTask : InputMessage -> NewTaskForm -> NewTaskForm
+updateNewTask msg taskForm =
+    case msg of
+        OnTagInput tagInput ->
+            if String.isEmpty tagInput then
+                { taskForm |
+                    tagInput = takeLast taskForm.tags |> Maybe.withDefault "",
+                    tags = takeAllButLast taskForm.tags |> reverse }
+            else
+                { taskForm |
+                    tags = append taskForm.tags <| (splitWords tagInput |> takeAllButLast |> filter (\s -> s /= "" )),
+                    tagInput = splitWords tagInput |> takeLast |> Maybe.withDefault "" |> String.cons ' ' }
+        OnDescInput some -> { taskForm | descInput = some }
+
+splitWords : String -> List String
+splitWords input =
+    split " " input
+
+takeAllButLast : List a -> List a
+takeAllButLast list =
+    tail (reverse list) |> Maybe.withDefault []
+
+takeLast : List a -> Maybe a
+takeLast =
+    List.foldl (Just >> always) Nothing
+
 
 -- Entry
 
 init : Config -> (ModelType, Cmd MsgType)
 init config =
     (initialModel config, Cmd.none)
+
+
 
 
 initialModel : Config -> ModelType
@@ -116,6 +164,7 @@ initialModel configIn =
     ,config = Config configIn.apiUrl
     ,error=""
     ,timeNow=0
+    ,newTaskForm= emptyTaskForm
     }
 
 subscriptions : ModelType -> Sub MsgType
