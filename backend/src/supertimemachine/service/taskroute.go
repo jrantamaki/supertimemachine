@@ -7,6 +7,7 @@ import (
 	. "supertimemachine/model"
 	"gopkg.in/mgo.v2"
 	"errors"
+	"log"
 )
 
 // This is the "datasource" for now :)
@@ -106,12 +107,22 @@ func requirePathInt(c *gin.Context, name string) (int, error) {
 
 // TODO: Move to Task?
 func ToMap(task *Task) StructAsMap {
+	log.Print("id stopped", task.Id, task.Stopped_at)
+
 	return StructAsMap{
 		"id": task.Id,
 		"description": task.Description,
 		"started_at": task.Started_at,
 		// Oh shit, how ugly can this get?! Give me the ternary operator pretty please
-		"stopped_at": func() *string { if task.Stopped_at != "" { return &task.Stopped_at } else { return nil } }(),
+		"stopped_at": stringOrNil(task.Stopped_at),
 		"tags": task.Tags,
+	}
+}
+
+func stringOrNil(value string) *string {
+	if (value == "") {
+		return nil
+	} else {
+		return &value
 	}
 }
