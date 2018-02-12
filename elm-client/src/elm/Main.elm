@@ -31,7 +31,7 @@ view model =
             ],
             div [ class "row" ] [
                 div [ class "col-sm" ] [
-                    h3 [] [text "Todays stuff"],
+                    h3 [style [("color", "rgb(1,5,200)")]] [text "Todays stuff"],
                     taskListView model
                 ],
                  div [ class "col-sm" ] [
@@ -71,6 +71,30 @@ submitTask taskForm config =
      in
        Http.send SubmitTaskResult request
 
+processCommand : TaskId -> Operation -> Config -> Cmd MsgType
+processCommand taskId op config =
+    let
+        url = config.apiUrl ++ "/task/" ++ toString taskId
+        body =
+            op
+                |> taskCommandEncoder
+                |> Http.jsonBody
+        request = Http.request
+              { method = "PATCH"
+              , headers = []
+              , url = url
+              , body = body
+              , expect = Http.expectJson taskDecoder
+              , timeout = Nothing
+              , withCredentials = False
+              }
+     in
+       Http.send TaskCommandResult request
+
+taskCommandEncoder : Operation -> Encode.Value
+taskCommandEncoder operation =
+    Encode.object [ ("op", Encode.string "stop") ]
+
 taskFormEncoder : NewTaskForm -> Encode.Value
 taskFormEncoder form =
     Encode.object [
@@ -86,6 +110,7 @@ tasksDecoder =
 taskDecoder : Decoder TaskEntry
 taskDecoder =
     decode TaskEntry
+        |> required "id" Json.Decode.int
         |> required "description" Json.Decode.string
         |> required "tags" (Json.Decode.list Json.Decode.string)
         |> required "started_at" date
@@ -114,6 +139,11 @@ update msg model =
     -- Responses from API for submitting task
     SubmitTaskResult (Ok task) -> ({model | newTaskForm = emptyTaskForm } , Cmd.none)
     SubmitTaskResult (Err err) -> ({model | error = toString err}, Cmd.none)
+
+    -- Task commands
+    TaskCommand id operation -> (model, processCommand id operation model.config)
+    TaskCommandResult (Ok task) -> (model, Cmd.none)
+    TaskCommandResult (Err err) -> ({model | error = toString err}, Cmd.none)
 
     -- Updating time
     Tick time ->

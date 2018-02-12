@@ -49,6 +49,7 @@ func main() {
 	if *allowCors != "" {
 		log.Println("Allow CORS from: ", *allowCors)
 		config := cors.DefaultConfig()
+		config.AllowMethods = append(config.AllowMethods, "PATCH")
 		config.AllowOrigins = []string{*allowCors}
 		router.Use(cors.New(config))
 	}
