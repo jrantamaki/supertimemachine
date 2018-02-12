@@ -9,7 +9,7 @@ import Http
 -- ******************
 type MsgType =
     -- Fired from UI to fetch a task
-    FetchTaskCommand Config
+    FetchTaskCommand
     -- Message for fetching task result that carries the fetched task
     | FetchTaskResult (Result Http.Error TaskList)
     -- Fired from UI to post new task

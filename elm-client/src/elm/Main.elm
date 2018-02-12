@@ -40,7 +40,7 @@ view model =
                 ],
                  div [ class "col-sm" ] [
                     h3 [] [text "Temp"],
-                    button [ class "btn btn-primary", onClick (FetchTaskCommand model.config)] [ text "Fetch tasks" ]
+                    button [ class "btn btn-primary", onClick FetchTaskCommand] [ text "Fetch tasks" ]
                 ]
             ]
         ]
@@ -123,8 +123,8 @@ update msg model =
     -- Handling the request to fetch a task
     case msg of
 
-    FetchTaskCommand config ->
-        (model, fetchTask config)
+    FetchTaskCommand ->
+        (model, fetchTask model.config)
 
     -- Handling the result of fetching the task
     FetchTaskResult (Ok tasks) ->
@@ -137,12 +137,12 @@ update msg model =
     SubmitTaskCommand newTaskForm -> (model, submitTask newTaskForm model.config)
 
     -- Responses from API for submitting task
-    SubmitTaskResult (Ok task) -> ({model | newTaskForm = emptyTaskForm } , Cmd.none)
+    SubmitTaskResult (Ok task) -> ({model | newTaskForm = emptyTaskForm } , fetchTask model.config )
     SubmitTaskResult (Err err) -> ({model | error = toString err}, Cmd.none)
 
     -- Task commands
     TaskCommand id operation -> (model, processCommand id operation model.config)
-    TaskCommandResult (Ok task) -> (model, Cmd.none)
+    TaskCommandResult (Ok task) -> (model, fetchTask model.config)
     TaskCommandResult (Err err) -> ({model | error = toString err}, Cmd.none)
 
     -- Updating time
