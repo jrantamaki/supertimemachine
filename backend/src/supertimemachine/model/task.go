@@ -11,3 +11,6 @@ type Task struct {
 }
 
 
+type Command struct {
+	Operation	string		`json:"op"`
+}

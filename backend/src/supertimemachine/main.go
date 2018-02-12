@@ -63,6 +63,7 @@ func main() {
 
 	router.GET("/task/", service.GetAllTasksHandler)
 	router.GET("/task/:id", service.GetTaskHandler)
+	router.PATCH("/task/:id", service.TaskPatchHandler)
 	router.POST("/task/", service.AddNewTaskHandler)
 
 

@@ -44,6 +44,21 @@ func GetTask(id int,session *mgo.Session) (error, *Task) {
 	return nil, &task
 }
 
+func StopTask(id int, session *mgo.Session) (error, *Task) {
+	s := session.Copy()
+	defer s.Close()
+
+	c := s.DB("supertimemachine-dev").C("tasks")
+	change := bson.M{"$set": bson.M{"stopped_at": nowToString()}}
+	err := c.Update(bson.M{"id": id}, change)
+
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	return GetTask(id, session)
+}
+
 func AddNewTask(task Task, session *mgo.Session) (error, Task) {
 	log.Print("Adding a new fantastic task")
 
@@ -52,7 +67,7 @@ func AddNewTask(task Task, session *mgo.Session) (error, Task) {
 
 	c := s.DB("supertimemachine-dev").C("tasks")
 
-	task.Started_at = time.Now().UTC().Format(time.RFC3339)
+	task.Started_at = nowToString()
 	err := c.Insert(task)
 
 	if err != nil {
@@ -60,5 +75,9 @@ func AddNewTask(task Task, session *mgo.Session) (error, Task) {
 	}
 
 	return nil, task
+}
+
+func nowToString() string {
+	return time.Now().UTC().Format(time.RFC3339)
 }
 
