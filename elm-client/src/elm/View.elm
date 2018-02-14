@@ -56,12 +56,16 @@ renderTags tasks =
 printDuration : Date -> Maybe Date -> Time -> String
 printDuration start stop timeNow =
     let
-        period = Period.diff (Maybe.withDefault (Date.fromTime timeNow) stop) start
-        duration = Duration.diff (Maybe.withDefault (Date.fromTime timeNow) stop) start
+        startSeconds = Date.toTime(start) |> Time.inSeconds |> truncate
+        endSeconds = Maybe.withDefault (Date.fromTime timeNow) stop |> Date.toTime |> Time.inSeconds |> truncate
+        diff = endSeconds - startSeconds
+        hours = diff // (60*60)
+        minutes = (diff - hours*60*60) // 60
+        seconds = diff - hours*60*60 - minutes*60
     in
-        toString (( (period.week * 7 + period.day) * 24) + duration.hour) ++ "h " ++
-        toString duration.minute ++ "m " ++
-        toString duration.second ++ "s"
+        toString hours ++ "h " ++
+        toString minutes ++ "m " ++
+        toString seconds ++ "s"
 
 formatDate : Date -> String
 formatDate d = Format.format config "%d.%m.%Y %H:%M:%S" d
