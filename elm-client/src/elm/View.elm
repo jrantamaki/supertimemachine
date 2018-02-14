@@ -11,19 +11,20 @@ import Date.Extra.Period as Period
 import Date.Extra.Duration as Duration
 import Time exposing (..)
 
-taskListView : ModelType -> Html msg
+taskListView : ModelType -> Html MsgType
 taskListView model =
     div [] (List.map (\task -> taskView task model.timeNow) model.taskList.tasks)
 
 
-taskView : TaskEntry -> Time -> Html msg
+taskView : TaskEntry -> Time -> Html MsgType
 taskView task timeNow =
     ul [ class "list-group list-group-flush"] [
         li [class "list-group-item"] [ text task.description],
         li [class "list-group-item"] [ span [] [ text (formatDate task.startedAt)]],
         li [class "list-group-item"] [ span [] [ text (formatMaybeDate task.stoppedAt)]],
         li [class "list-group-item"] [ text (printDuration task.startedAt task.stoppedAt timeNow)],
-        li [class "list-group-item"] (renderTags task.tags)
+        li [class "list-group-item"] (renderTags task.tags),
+        li [class "list-group-item", hidden (isSomething task.stoppedAt)] [ button [ class "btn btn-primary", onClick (TaskCommand task.id Stop)] [ text "Stop"]]
     ]
 
 newTaskFormView : NewTaskForm -> Html MsgType
@@ -59,3 +60,11 @@ formatMaybeDate maybe =
         Nothing -> ""
         Just val -> formatDate val
 
+isNothing : Maybe a -> Bool
+isNothing m =
+  case m of
+    Nothing -> True
+    Just _  -> False
+
+isSomething : Maybe a -> Bool
+isSomething m = not (isNothing m)

@@ -107,8 +107,6 @@ func requirePathInt(c *gin.Context, name string) (int, error) {
 
 // TODO: Move to Task?
 func ToMap(task *Task) StructAsMap {
-	log.Print("id stopped", task.Id, task.Stopped_at)
-
 	return StructAsMap{
 		"id": task.Id,
 		"description": task.Description,

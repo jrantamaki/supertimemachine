@@ -6,6 +6,7 @@ import (
 	"time"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
+	"math/rand"
 )
 
 func GetAllTasks(session *mgo.Session) (error, []Task) {
@@ -68,6 +69,7 @@ func AddNewTask(task Task, session *mgo.Session) (error, Task) {
 	c := s.DB("supertimemachine-dev").C("tasks")
 
 	task.Started_at = nowToString()
+	task.Id = random(1000,100000000);
 	err := c.Insert(task)
 
 	if err != nil {
@@ -79,5 +81,10 @@ func AddNewTask(task Task, session *mgo.Session) (error, Task) {
 
 func nowToString() string {
 	return time.Now().UTC().Format(time.RFC3339)
+}
+
+func random(min, max int) int {
+	rand.Seed(time.Now().Unix())
+	return rand.Intn(max - min) + min
 }
 
