@@ -13,27 +13,39 @@ import Time exposing (..)
 
 taskListView : ModelType -> Html MsgType
 taskListView model =
-    div [] (List.map (\task -> taskView task model.timeNow) model.taskList.tasks)
+    table [class "table"] (List.append (taskRows model) [ tr[] [newTaskFormView model.newTaskForm] ])
 
+taskRows : ModelType -> List (Html MsgType)
+taskRows model =
+    (List.map (\task -> taskView task model.timeNow) model.taskList.tasks)
 
 taskView : TaskEntry -> Time -> Html MsgType
 taskView task timeNow =
-    ul [ class "list-group list-group-flush"] [
-        li [class "list-group-item"] [ text task.description],
-        li [class "list-group-item"] [ span [] [ text (formatDate task.startedAt)]],
-        li [class "list-group-item"] [ span [] [ text (formatMaybeDate task.stoppedAt)]],
-        li [class "list-group-item"] [ text (printDuration task.startedAt task.stoppedAt timeNow)],
-        li [class "list-group-item"] (renderTags task.tags),
-        li [class "list-group-item", hidden (isSomething task.stoppedAt)] [ button [ class "btn btn-primary", onClick (TaskCommand task.id Stop)] [ text "Stop"]]
+    tr [] [
+        div [class "container border"] [
+            div [class "row"] [
+                div [] (renderTags task.tags)
+            ],
+            div [class "row"] [
+                div [class "col-sm-2"] [ text (formatDate task.startedAt)],
+                div [class "col-sm-2"] [ text (formatMaybeDate task.stoppedAt)],
+                div [class "col-sm-4"] [ span [ class "font-italic" ] [text task.description ]],
+                div [class "col-sm-2"] [ text (printDuration task.startedAt task.stoppedAt timeNow)],
+                div [class "col-sm-2"] [ button [ hidden (isSomething task.stoppedAt), class "btn btn-primary", onClick (TaskCommand task.id Stop)] [ text "Stop"] ]
+            ]
+        ]
     ]
 
 newTaskFormView : NewTaskForm -> Html MsgType
 newTaskFormView taskForm =
-    div [] [
-        input [ placeholder "Description", value taskForm.descInput, onInput (NewTaskFormInput << OnDescInput)] [],
-        div [] [ span [] (renderTags taskForm.tags) ],
-        input [ placeholder "tags", value taskForm.tagInput, onInput (NewTaskFormInput << OnTagInput)] [],
-        div [ ] [ button [class "btn btn-primary", onClick (SubmitTaskCommand taskForm)] [ text "Start" ] ]
+    div [class "container border"] [
+            div [class "row"] [ div [] [ span [] (renderTags taskForm.tags) ] ],
+            div [class "row"] [
+                div [class "col-sm-4"] [ input [ placeholder "tags", value taskForm.tagInput, onInput (NewTaskFormInput << OnTagInput)] [] ],
+                div [class "col-sm-4"] [ input [ placeholder "Description", value taskForm.descInput, onInput (NewTaskFormInput << OnDescInput)] []],
+                div [class "col-sm-2"] [],
+                div [class "col-sm-2"] [ button [class "btn btn-primary", onClick (SubmitTaskCommand taskForm)] [ text "Start" ] ]
+            ]
     ]
 
 renderTags : List String -> List (Html msg)

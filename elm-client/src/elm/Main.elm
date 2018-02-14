@@ -31,18 +31,9 @@ view model =
             ],
             div [ class "row" ] [
                 div [ class "col-sm" ] [
-                    h3 [style [("color", "rgb(1,5,200)")]] [text "Todays stuff"],
+                    h3 [style [("color", "rgb(1,5,200)")]] [text "We should show todays tasks here"],
                     taskListView model
-                ],
-                 div [ class "col-sm" ] [
-                    h3 [ style [("color", "rgb(100,200,256)")] ] [text "New task"],
-                    newTaskFormView model.newTaskForm
-                ],
-                 div [ class "col-sm" ] [
-                    h3 [] [text "Temp"],
-                    button [ class "btn btn-primary", onClick FetchTaskCommand] [ text "Fetch tasks" ]
-                ]
-            ]
+                ]]
         ]
 
 -- ****************
@@ -120,17 +111,15 @@ taskDecoder =
 -- Our update function takes in message and model and returns a tuple of new model with possibly a command to perform
 update : MsgType -> ModelType -> (ModelType, Cmd MsgType)
 update msg model =
-    -- Handling the request to fetch a task
     case msg of
 
+    -- Handling the request to fetch a tasks
     FetchTaskCommand ->
         (model, fetchTask model.config)
 
-    -- Handling the result of fetching the task
+    -- Handling the result of fetching the tasks
     FetchTaskResult (Ok tasks) ->
         ({ model | taskList = tasks, error="" }, Cmd.none) -- Lets update the current task field of the model record
-
-    -- Handling the http error (or parsing) while fetching task
     FetchTaskResult (Err err) -> ({model | error = toString err}, Cmd.none)
 
     -- Submitting new task
@@ -182,7 +171,7 @@ takeLast =
 
 init : Config -> (ModelType, Cmd MsgType)
 init config =
-    (initialModel config, Cmd.none)
+    (initialModel config, fetchTask config)
 
 
 
