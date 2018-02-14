@@ -7,7 +7,6 @@ import (
 	. "supertimemachine/model"
 	"gopkg.in/mgo.v2"
 	"errors"
-	"log"
 )
 
 // This is the "datasource" for now :)
@@ -56,7 +55,7 @@ func GetAllTasksHandler(c *gin.Context) {
 		return
 	}
 
-	var taskList []StructAsMap
+	var taskList []StructAsMap = []StructAsMap{}
 	for _, task := range allTasks {
 		taskList = append(taskList, ToMap(&task))
 	}
