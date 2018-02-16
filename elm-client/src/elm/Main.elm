@@ -105,7 +105,7 @@ taskDecoder =
         |> required "description" Json.Decode.string
         |> required "tags" (Json.Decode.list Json.Decode.string)
         |> required "started_at" date
-        |> required "stopped_at" (nullable date)
+        |> optional "stopped_at" (nullable date) Nothing
 
 
 -- Our update function takes in message and model and returns a tuple of new model with possibly a command to perform
