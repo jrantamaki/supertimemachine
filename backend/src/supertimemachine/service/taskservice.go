@@ -12,7 +12,7 @@ func GetAllTasks(session *mgo.Session) (error, []Task) {
 	log.Print("Getting all tasks! ")
 
 	return executeQuery(session, func(c *mgo.Collection)(error, []Task){
-		var allTasks []Task
+		var allTasks []Task = []Task{}
 		err := c.Find(bson.M{}).All(&allTasks)
 		return err, allTasks
 	})
