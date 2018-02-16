@@ -6,7 +6,6 @@ import (
 	"time"
 	"gopkg.in/mgo.v2"
 	"gopkg.in/mgo.v2/bson"
-	"math/rand"
 )
 
 func GetAllTasks(session *mgo.Session) (error, []Task) {
@@ -19,35 +18,40 @@ func GetAllTasks(session *mgo.Session) (error, []Task) {
 	})
 }
 
-func GetTask(id int,session *mgo.Session) (error, *Task) {
-	log.Print("Getting tasks id: ", id)
+func GetTask(id string,session *mgo.Session) (error, *Task) {
 
 	err, tasks := executeQuery(session, func(c *mgo.Collection)(error, []Task){
 		var task Task
-		err := c.Find(bson.M{"id": id}).One(&task)
+		err := c.FindId(bson.ObjectIdHex(id)).One(&task)
 		return err, []Task{task}
 	})
+
+	if err != nil {
+		return err, nil
+	}
 
 	return err, &tasks[0]
 }
 
 
-func StopTask(id int, session *mgo.Session) (error, *Task) {
+func StopTask(id string, session *mgo.Session) (error, *Task) {
 
-	executeQuery(session, func(c *mgo.Collection)(error, []Task){
+	err, _ := executeQuery(session, func(c *mgo.Collection)(error, []Task){
 		change := bson.M{"$set": bson.M{"stopped_at": nowToString()}}
-		err := c.Update(bson.M{"id": id}, change)
+		err := c.UpdateId(bson.ObjectIdHex(id), change)
 		return err, nil
 	})
+
+	if err != nil {
+		return err, nil
+	}
 
 	return GetTask(id, session)
 }
 
 func AddNewTask(task Task, session *mgo.Session) (error, Task) {
-	log.Print("Adding a new fantastic task")
-
 	task.Started_at = nowToString()
-	task.Id = random(1000,100000000)
+	task.Id = bson.NewObjectId()
 	executeQuery(session, func(c *mgo.Collection)(error, []Task){
 		err := c.Insert(task)
 		return err, nil
@@ -58,14 +62,13 @@ func AddNewTask(task Task, session *mgo.Session) (error, Task) {
 type Query func(c *mgo.Collection) (error, []Task)
 
 func executeQuery(session *mgo.Session, query Query) (error, []Task) {
-
 	s := session.Copy()
 	defer s.Close()
 
 	c := s.DB("supertimemachine-dev").C("tasks")
 	err, tasks := query(c)
 	if err != nil {
-		log.Fatal(err)
+		log.Print("Error executing query: ", err)
 	}
 
 	return err,tasks
@@ -73,10 +76,5 @@ func executeQuery(session *mgo.Session, query Query) (error, []Task) {
 
 func nowToString() string {
 	return time.Now().UTC().Format(time.RFC3339)
-}
-
-func random(min, max int) int {
-	rand.Seed(time.Now().Unix())
-	return rand.Intn(max - min) + min
 }
 

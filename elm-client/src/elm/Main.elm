@@ -65,7 +65,7 @@ submitTask taskForm config =
 processCommand : TaskId -> Operation -> Config -> Cmd MsgType
 processCommand taskId op config =
     let
-        url = config.apiUrl ++ "/task/" ++ toString taskId
+        url = config.apiUrl ++ "/task/" ++ taskId
         body =
             op
                 |> taskCommandEncoder
@@ -101,7 +101,7 @@ tasksDecoder =
 taskDecoder : Decoder TaskEntry
 taskDecoder =
     decode TaskEntry
-        |> required "id" Json.Decode.int
+        |> required "id" Json.Decode.string
         |> required "description" Json.Decode.string
         |> required "tags" (Json.Decode.list Json.Decode.string)
         |> required "started_at" date
