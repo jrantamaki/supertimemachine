@@ -31,7 +31,7 @@ type Operation = Stop
 -- ***************
 type alias Config =  { apiUrl : String }
 
-type alias TaskId = Int
+type alias TaskId = String
 type alias TaskEntry = {
     id: TaskId,
     description : String,

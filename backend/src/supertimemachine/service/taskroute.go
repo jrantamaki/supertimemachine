@@ -33,7 +33,7 @@ func AddNewTaskHandler(c *gin.Context){
 
 
 func GetTaskHandler(c *gin.Context){
-	i, err := requirePathInt(c, "id")
+	i, err := requirePathString(c, "id")
 	if err != nil { return }
 
 	e, task := GetTask(i, Session)
@@ -65,7 +65,7 @@ func GetAllTasksHandler(c *gin.Context) {
 
 func TaskPatchHandler(c *gin.Context) {
 
-	id, err := requirePathInt(c, "id")
+	id, err := requirePathString(c, "id")
 	if err != nil { return }
 
 	var command Command
@@ -93,6 +93,17 @@ func SendError(c *gin.Context, err error)  {
 }
 
 // TODO: Move to some http helper module
+func requirePathString(c *gin.Context, name string) (string, error) {
+
+	value := c.Param(name)
+	if value == "" {
+		c.JSON(http.StatusBadRequest, "Missing path variable: " + name);
+		return "",errors.New("Missing path variable: " + name)
+	}
+
+	return value,nil
+}
+
 func requirePathInt(c *gin.Context, name string) (int, error) {
 	i, err := strconv.Atoi(c.Param(name))
 
