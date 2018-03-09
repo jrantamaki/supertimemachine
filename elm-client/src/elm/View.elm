@@ -3,13 +3,23 @@ module View exposing (taskListView, newTaskFormView)
 import Date exposing (Date)
 import Model exposing(..)
 import Html exposing (..)
-import Html.Attributes exposing (class,id,hidden, placeholder,value)
+import Html.Attributes exposing (class,id,hidden, placeholder,value,style)
 import Html.Events exposing (onInput,onClick)
 import Date.Extra.Format as Format exposing (format, formatUtc, isoMsecOffsetFormat)
 import Date.Extra.Config.Config_en_us exposing (config)
 import Date.Extra.Period as Period
 import Date.Extra.Duration as Duration
 import Time exposing (..)
+import Array
+import Char
+
+tagColors = Array.fromList [
+    "#D98880", "#F1948A","#C39BD3","#BB8FCE",
+    "#7FB3D5","#7FB3D5","#76D7C4","#73C6B6",
+    "#7DCEA0","#82E0AA","#F7DC6F","#F7DC6F",
+    "#F0B27A","#E59866","#D7DBDD","#BFC9CA",
+    "#B2BABB","#85929E","#808B96"
+    ]
 
 taskListView : ModelType -> Html MsgType
 taskListView model =
@@ -50,8 +60,20 @@ newTaskFormView taskForm =
 
 renderTags : List String -> List (Html msg)
 renderTags tasks =
-    (List.map (\s -> span [] [ span [ class "badge badge-primary" ] [text s], text " "]) tasks)
+    (List.map (\s -> span [] [ span [ class "badge", badgeStyle s ] [text s], text " "]) tasks)
 
+
+badgeStyle : String -> Attribute msg
+badgeStyle text =
+    style [("background-color", tagToColor text )]
+
+tagToColor : String -> String
+tagToColor tag =
+    Array.get ((hash tag) % (Array.length tagColors)) tagColors |> Maybe.withDefault "red"
+
+hash : String -> Int
+hash from =
+    String.toList from |> List.map Char.toCode |> List.foldl (+) 0
 
 printDuration : Date -> Maybe Date -> Time -> String
 printDuration start stop timeNow =
