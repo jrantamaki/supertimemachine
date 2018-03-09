@@ -12,7 +12,7 @@ func GetAllTasks(session *mgo.Session) (error, []Task) {
 	log.Print("Getting all tasks! ")
 
 	return executeQuery(session, func(c *mgo.Collection)(error, []Task){
-		var allTasks []Task
+		var allTasks []Task = []Task{}
 		err := c.Find(bson.M{}).All(&allTasks)
 		return err, allTasks
 	})
@@ -37,7 +37,7 @@ func GetTask(id string,session *mgo.Session) (error, *Task) {
 func StopTask(id string, session *mgo.Session) (error, *Task) {
 
 	err, _ := executeQuery(session, func(c *mgo.Collection)(error, []Task){
-		change := bson.M{"$set": bson.M{"stopped_at": nowToString()}}
+		change := bson.M{"$set": bson.M{"stopped_at": timeNow()}}
 		err := c.UpdateId(bson.ObjectIdHex(id), change)
 		return err, nil
 	})
@@ -50,13 +50,17 @@ func StopTask(id string, session *mgo.Session) (error, *Task) {
 }
 
 func AddNewTask(task Task, session *mgo.Session) (error, Task) {
-	task.Started_at = nowToString()
+	task.Started_at = timeNow()
 	task.Id = bson.NewObjectId()
 	executeQuery(session, func(c *mgo.Collection)(error, []Task){
 		err := c.Insert(task)
 		return err, nil
 	})
 	return nil, task
+}
+
+func timeNow() time.Time {
+	return time.Now().UTC()
 }
 
 type Query func(c *mgo.Collection) (error, []Task)
@@ -74,7 +78,4 @@ func executeQuery(session *mgo.Session, query Query) (error, []Task) {
 	return err,tasks
 }
 
-func nowToString() string {
-	return time.Now().UTC().Format(time.RFC3339)
-}
 

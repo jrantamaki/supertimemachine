@@ -1,18 +1,21 @@
 package model
 
-import "gopkg.in/mgo.v2/bson"
+import (
+	"gopkg.in/mgo.v2/bson"
+	"time"
+)
 
-// TODO: We need to get the json out so that we produce null or no values at all for empty strings instead of ""
-// Maybe the 'omitempty' as used in https://stackoverflow.com/questions/39153419/golang-mongo-insert-with-self-generated-id-using-bson-newobjectid-resulting-i
-// Currently handled in taskroute
 type Task struct {
 	Id          	bson.ObjectId		`bson:"_id" json:"id"`
 	Description 	string    		`json:"description"`
 	Tags        	[]string		`json:"tags"`
-	Started_at	string			`json:"started_at"`
-	Stopped_at	string			`json:"stopped_at"`
+	Started_at	time.Time		`json:"started_at"`
+	Stopped_at	*time.Time		`json:"stopped_at,omitempty"` // Having as pointer to make nullable
 }
 
+type TaskList struct {
+	Tasks		[]Task			`json:"tasks"`
+}
 
 type Command struct {
 	Operation	string		`json:"op"`

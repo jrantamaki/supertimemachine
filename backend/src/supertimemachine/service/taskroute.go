@@ -12,10 +12,6 @@ import (
 // This is the "datasource" for now :)
 var Session *mgo.Session;
 
-// There is this mysterious map[string]interface{} type which I dont understand :)
-type StructAsMap gin.H
-
-
 func AddNewTaskHandler(c *gin.Context){
 	var task Task
 	c.BindJSON(&task)
@@ -27,7 +23,7 @@ func AddNewTaskHandler(c *gin.Context){
 		return
 	}
 
-	c.JSON(http.StatusOK, ToMap(&created))
+	SendTask(c,&created)
 }
 
 
@@ -54,13 +50,7 @@ func GetAllTasksHandler(c *gin.Context) {
 		c.JSON(http.StatusInternalServerError, "Could not get all tasks");
 		return
 	}
-
-	var taskList []StructAsMap = []StructAsMap{}
-	for _, task := range allTasks {
-		taskList = append(taskList, ToMap(&task))
-	}
-
-	c.JSON(http.StatusOK, StructAsMap{ "tasks": taskList })
+	c.JSON(http.StatusOK, TaskList{allTasks})
 }
 
 func TaskPatchHandler(c *gin.Context) {
@@ -74,7 +64,10 @@ func TaskPatchHandler(c *gin.Context) {
 	switch command.Operation {
 	case "stop":
 		e, task := StopTask(id, Session)
-		if e!= nil { SendError(c, e)  }
+		if e!= nil {
+			SendError(c, e)
+			return
+		}
 		SendTask(c, task)
 		return
 	default:
@@ -84,7 +77,7 @@ func TaskPatchHandler(c *gin.Context) {
 }
 
 func SendTask(c *gin.Context, task *Task) {
-	c.JSON(http.StatusOK, ToMap(task));
+	c.JSON(http.StatusOK, task);
 }
 
 // TODO: Move to some http helper module
@@ -115,22 +108,3 @@ func requirePathInt(c *gin.Context, name string) (int, error) {
 	return i,nil
 }
 
-// TODO: Move to Task?
-func ToMap(task *Task) StructAsMap {
-	return StructAsMap{
-		"id": task.Id,
-		"description": task.Description,
-		"started_at": task.Started_at,
-		// Oh shit, how ugly can this get?! Give me the ternary operator pretty please
-		"stopped_at": stringOrNil(task.Stopped_at),
-		"tags": task.Tags,
-	}
-}
-
-func stringOrNil(value string) *string {
-	if (value == "") {
-		return nil
-	} else {
-		return &value
-	}
-}
