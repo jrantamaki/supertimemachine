@@ -29,6 +29,9 @@ view model =
                     text model.error
                 ]
             ],
+            div [] [
+                h3 [ hidden (String.isEmpty model.config.token)] [text "Thou are logged in!"]
+            ],
             div [ class "row" ] [
                 div [ class "col-sm" ] [
                     h3 [style [("color", "rgb(1,5,200)")]] [text "We should show todays tasks here"],
@@ -173,14 +176,10 @@ init : Config -> (ModelType, Cmd MsgType)
 init config =
     (initialModel config, fetchTask config)
 
-
-
-
 initialModel : Config -> ModelType
 initialModel configIn =
     { taskList = TaskList []
--- TODO: we should just take the whole config in
-    ,config = Config configIn.apiUrl
+    ,config = configIn
     ,error=""
     ,timeNow=0
     ,newTaskForm= emptyTaskForm

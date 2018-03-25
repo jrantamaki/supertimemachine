@@ -29,7 +29,9 @@ type Operation = Stop
 -- ***************
 -- **** Model ****
 -- ***************
-type alias Config =  { apiUrl : String }
+type alias Config =  {
+    apiUrl : String,
+    token: String }
 
 type alias TaskId = String
 type alias TaskEntry = {
