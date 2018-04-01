@@ -12,6 +12,7 @@ import Json.Encode as Encode exposing (..)
 
 import Model exposing (..)
 import View exposing(..)
+import Tokens exposing(userName)
 import Time exposing (..)
 import String exposing (split)
 import List exposing (..)
@@ -30,7 +31,7 @@ view model =
                 ]
             ],
             div [] [
-                h3 [ hidden (String.isEmpty model.config.token)] [text "Thou are logged in!"]
+                h3 [ ] [text (userName model.config.token)]
             ],
             div [ class "row" ] [
                 div [ class "col-sm" ] [
