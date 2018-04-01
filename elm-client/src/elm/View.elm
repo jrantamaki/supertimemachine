@@ -41,7 +41,12 @@ taskView task timeNow =
                 div [class "col-sm-2"] [ text (formatMaybeDate task.stoppedAt)],
                 div [class "col-sm-4"] [ span [ class "font-italic" ] [text task.description ]],
                 div [class "col-sm-2"] [ text (printDuration task.startedAt task.stoppedAt timeNow)],
-                div [class "col-sm-2"] [ button [ hidden (isSomething task.stoppedAt), class "btn btn-primary", onClick (TaskCommand task.id Stop)] [ text "Stop"] ]
+                div [class "col-sm-2"] [
+                    span [
+                        hidden (isSomething task.stoppedAt)
+                        , style [("color", "red")]
+                        , class "oi oi-media-stop"
+                        , onClick (TaskCommand task.id Stop)] []]
             ]
         ]
     ]
@@ -54,7 +59,11 @@ newTaskFormView taskForm =
                 div [class "col-sm-4"] [ input [ placeholder "tags", value taskForm.tagInput, onInput (NewTaskFormInput << OnTagInput)] [] ],
                 div [class "col-sm-4"] [ input [ placeholder "Description", value taskForm.descInput, onInput (NewTaskFormInput << OnDescInput)] []],
                 div [class "col-sm-2"] [],
-                div [class "col-sm-2"] [ button [class "btn btn-primary", onClick (SubmitTaskCommand taskForm)] [ text "Start" ] ]
+                div [class "col-sm-2"] [
+                    span [
+                         style [("color", "green")]
+                        , class "oi oi-media-play"
+                        , onClick (SubmitTaskCommand taskForm)] []]
             ]
     ]
 
