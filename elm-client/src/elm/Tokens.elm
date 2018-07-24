@@ -4,25 +4,30 @@ import Jwt exposing(..)
 import Jwt.Decoders exposing (JwtToken)
 import Json.Decode as Json exposing (Decoder, field)
 
---type alias ExtendedToken a = { a | userName: String }
---type alias CognitoToken = ExtendedToken(JwtToken)
+type alias CognitoToken =
+    { iat : Int
+    , exp : Int
+    , userId : Maybe String
+    , email : Maybe String
+    , userName : Maybe String
+    }
 
 userName : String -> String
 userName token =
-    decode token |> Result.map .userId |> Result.map (Maybe.withDefault "") |> Result.withDefault ""
+    decode token |> Result.map .userName |> Result.map (Maybe.withDefault "") |> Result.withDefault "ERR_JWT"
 
-decode : String -> Result JwtError JwtToken
+decode : String -> Result JwtError CognitoToken
 decode token =
     decodeToken coqnitoDecoder token
 
-coqnitoDecoder : Decoder JwtToken
+coqnitoDecoder : Decoder CognitoToken
 coqnitoDecoder =
-    Json.succeed JwtToken
-        |> andMap (field "iat" Json.int) -- JwtToken.iat
-        |> andMap (field "exp" Json.int) -- JwtToken.exp
-        |> andMap (Json.maybe <| field "sub" Json.string) -- JwtToken.userId
-        |> andMap (Json.maybe <| field "email" Json.string) -- JwtToken.email
---        |> andMap (field "coqnito:username" Json.string) -- CognitoToken.userName
+    Json.succeed CognitoToken
+        |> andMap (field "iat" Json.int)
+        |> andMap (field "exp" Json.int)
+        |> andMap (Json.maybe <| field "sub" Json.string)
+        |> andMap (Json.maybe <| field "email" Json.string)
+        |> andMap (Json.maybe <| field "cognito:username" Json.string)
 
 andMap : Decoder a -> Decoder (a -> b) -> Decoder b
 andMap =

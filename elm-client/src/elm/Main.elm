@@ -23,22 +23,25 @@ import List exposing (..)
 -- **************
 view : ModelType -> Html MsgType
 view model =
-    div [ class "container" ]
-        [
-            div [ class "row", hidden (String.isEmpty model.error) ] [
-                div [ class "alert alert-danger"] [
-                    text model.error
-                ]
-            ],
-            div [] [
-                h3 [ ] [text (userName model.config.token)]
-            ],
-            div [ class "row" ] [
-                div [ class "col-sm" ] [
-                    h3 [style [("color", "rgb(1,5,200)")]] [text "We should show todays tasks here"],
-                    taskListView model
-                ]]
-        ]
+    div [] [
+        navBarView model,
+        div [ class "container" ]
+            [
+                div [ class "row", hidden (String.isEmpty model.error) ] [
+                    div [ class "alert alert-danger"] [
+                        text model.error
+                    ]
+                ],
+                div [] [
+                    h3 [ ] [text (userName model.config.token)]
+                ],
+                div [ class "row" ] [
+                    div [ class "col-sm" ] [
+                        h3 [style [("color", "rgb(1,5,200)")]] [text "We should show todays tasks here"],
+                        taskListView model
+                    ]]
+            ]
+    ]
 
 -- ****************
 -- **** Update ****

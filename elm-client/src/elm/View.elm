@@ -1,9 +1,9 @@
-module View exposing (taskListView, newTaskFormView)
+module View exposing (taskListView, newTaskFormView, navBarView)
 
 import Date exposing (Date)
 import Model exposing(..)
 import Html exposing (..)
-import Html.Attributes exposing (class,id,hidden, placeholder,value,style)
+import Html.Attributes exposing (class,id,hidden, placeholder,value,style,attribute,href,type_)
 import Html.Events exposing (onInput,onClick)
 import Date.Extra.Format as Format exposing (format, formatUtc, isoMsecOffsetFormat)
 import Date.Extra.Config.Config_en_us exposing (config)
@@ -67,6 +67,56 @@ newTaskFormView taskForm =
             ]
     ]
 
+navBarView : ModelType -> Html MsgType
+navBarView model =
+    nav [ class "navbar navbar-expand-lg navbar-light bg-light" ]
+        [ a [ class "navbar-brand", href "#" ]
+            [ text "Navbar" ]
+        , button [ attribute "aria-controls" "navbarSupportedContent", attribute "aria-expanded" "false", attribute "aria-label" "Toggle navigation", class "navbar-toggler", attribute "data-target" "#navbarSupportedContent", attribute "data-toggle" "collapse", type_ "button" ]
+            [ span [ class "navbar-toggler-icon" ]
+                []
+            ]
+        , div [ class "collapse navbar-collapse", id "navbarSupportedContent" ]
+            [ ul [ class "navbar-nav mr-auto" ]
+                [ li [ class "nav-item active" ]
+                    [ a [ class "nav-link", href "#" ]
+                        [ text "Home "
+                        , span [ class "sr-only" ]
+                            [ text "(current)" ]
+                        ]
+                    ]
+                , li [ class "nav-item" ]
+                    [ a [ class "nav-link", href "#" ]
+                        [ text "Link" ]
+                    ]
+                , li [ class "nav-item dropdown" ]
+                    [ a [ attribute "aria-expanded" "false", attribute "aria-haspopup" "true", class "nav-link dropdown-toggle", attribute "data-toggle" "dropdown", href "#", id "navbarDropdown", attribute "role" "button" ]
+                        [ text "Dropdown        " ]
+                    , div [ attribute "aria-labelledby" "navbarDropdown", class "dropdown-menu" ]
+                        [ a [ class "dropdown-item", href "#" ]
+                            [ text "Action" ]
+                        , a [ class "dropdown-item", href "#" ]
+                            [ text "Another action" ]
+                        , div [ class "dropdown-divider" ]
+                            []
+                        , a [ class "dropdown-item", href "#" ]
+                            [ text "Something else here" ]
+                        ]
+                    ]
+                , li [ class "nav-item" ]
+                    [ a [ class "nav-link disabled", href "#" ]
+                        [ text "Disabled" ]
+                    ]
+                ]
+            , form [ class "form-inline my-2 my-lg-0" ]
+                [ input [ attribute "aria-label" "Search", class "form-control mr-sm-2", placeholder "Search", type_ "search" ]
+                    []
+                , button [ class "btn btn-outline-success my-2 my-sm-0", type_ "submit" ]
+                    [ text "Search" ]
+                ]
+            ]
+        ]
+
 renderTags : List String -> List (Html msg)
 renderTags tasks =
     (List.map (\s -> span [] [ span [ class "badge", badgeStyle s ] [text s], text " "]) tasks)
@@ -75,6 +125,7 @@ renderTags tasks =
 badgeStyle : String -> Attribute msg
 badgeStyle text =
     style [("background-color", tagToColor text )]
+
 
 tagToColor : String -> String
 tagToColor tag =
