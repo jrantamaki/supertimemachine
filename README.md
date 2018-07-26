@@ -51,10 +51,11 @@ For more information about using Go on Heroku, see these Dev Center articles:
 # Docker
 
 ## Building docker image
-docker build -t archvile/supertimemachine .
+
+docker build -tag supertimemachine .
 
 ## Dropping to shell
-docker container run -it archvile/supertimemachine /bin/sh
+docker container run -it supertimemachine /bin/sh
 
 ## Running the app in the container
 docker container run -it -p 8000:8000 --env PORT=8000 archvile/supertimemachine
