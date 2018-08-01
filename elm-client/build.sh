@@ -1,4 +1,4 @@
 #!/bin/bash
-npm run reinstall
+npm install
 npm run build
 

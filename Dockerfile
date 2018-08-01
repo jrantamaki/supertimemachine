@@ -4,7 +4,8 @@
 
 
 # Start with the Alpine linux
-FROM alpine:3.8 AS build-env
+#FROM alpine:3.8 AS build-env
+FROM frolvlad/alpine-glibc
 COPY . /build
 WORKDIR /build
 
@@ -12,7 +13,9 @@ WORKDIR /build
 ## Use specific GO version to be consisted with local development
 ARG GO_VERSION 
 
-# Installing packages needed for building the app
+###################################################
+# Installing packages needed for building the app #
+###################################################
 
 ## Install GO
 ## Using older GO version (1.9.4) from Alpine 3.7
@@ -21,16 +24,17 @@ RUN apk add go@alpine37
 RUN echo 'Verify Go version to be: ' $GO_VERSION
 RUN go version | grep $GO_VERSION 
 
-RUN echo 'all ok'
-# Git needed for 'go get' for fetching dependencies
-#RUN apk add --no-cache git mercurial
+## Git needed for 'go get' for fetching dependencies
+RUN apk add --no-cache git mercurial
 
-# Govendor for dependency management
-#RUN go get -u github.com/kardianos/govendor
+## Needed for govendor
+RUN apk add --no-cache musl-dev
 
-# Build Go backend
-#WORKDIR /build/backend
-#RUN . ./build.sh
+####################
+# Build Go backend #
+####################
+WORKDIR /build/backend
+RUN . ./build.sh
 
 # Build Elm frontend
 # Compiles the Elm client as javascript to /dist
