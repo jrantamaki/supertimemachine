@@ -1,0 +1,12 @@
+backend/goapp
+backend/.cache
+backend/src/*
+!backend/src/vendor/vendor.json
+!backend/src/supertimemachine
+backend/pkg/*
+.git
+**/.idea
+
+elm-client/elm-stuff
+elm-client/dist/
+elm-client/node_modules/

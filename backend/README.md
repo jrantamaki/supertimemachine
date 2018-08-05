@@ -1,6 +1,8 @@
-# Setting up project Go setup
+# Backend GO application for the superTimeMachine
 
-## Install Govendor
+## Development setup
+
+### Install Govendor
 This will install Govendor to your local Go path (e.g. ~/go). 
 We want it there instead of our project folder, so we first clear the 
 GOPATH env variable.

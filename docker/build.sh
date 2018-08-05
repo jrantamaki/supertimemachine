@@ -1,9 +1,11 @@
 #!/bin/bash
-echo "Webpack is not yet installed in the Docker build so we need to have elm-client built before"
-cd ../elm-client
-npm run reinstall
-npm run build
+set -e
+echo "Building the docker image"
 
-echo "Now lets build the docker image"
-cd ..
-docker build -t archvile/supertimemachine .
+if [[ -z "${STM_GO_VERSION}" ]]; then
+ 	echo "Missing env variable STM_GO_VERSION for build"
+	exit 1
+fi
+
+docker build --tag supertimemachine --build-arg STM_GO_VERSION=$STM_GO_VERSION ../
+
